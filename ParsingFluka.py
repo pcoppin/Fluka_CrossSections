@@ -1,5 +1,5 @@
 # First source /cvmfs/dampe.cern.ch/centos7/etc/setup.sh,
-#    then /cvmfs/dampe.cern.ch/centos7/etc/setup_conda_python2.7_tensorflow2.1.sh
+#    then /cvmfs/sft.cern.ch/lcg/contrib/gcc/9.2.0/x86_64-centos7/setup.sh
 #    to get both correct version of python and gfortran
 
 # Probably, this is far for the ideal way to do this, but is works \_()_/
@@ -15,14 +15,14 @@ setup_txt = """*...+....1....+....2....+....3....+....4....+....5....+....6....+
 TITLE
 Charged protons on aluminium
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-BEAM         {:.1e}                                                  {}
+BEAM      {:10.4e}                                                  {}
 BEAMPOS          0.0       0.0     -50.0
 *
 GEOBEGIN                                                              COMBNAME
   0 0                       A simple Be target inside vacuum
 RPP body1 -5000000.0 +5000000.0 -5000000.0 +5000000.0 -5000000.0 +5000000.0
 RPP body2 -1000000.0 +1000000.0 -1000000.0 +1000000.0    -100.0  +1000000.0
-RPP body3     -10.0      +10.0      -10.0      +10.0        0.0       +5.0
+RPP body3     -20.0      +20.0      -20.0      +20.0        0.0       +5.0
 * plane to separate the upstream and downstream part of the target
 XYP body4       2.5
 END
@@ -40,7 +40,7 @@ GEOEND
 *MATERIAL         4.0               1.848       5.0                    TEST
 *MATERIAL     protons             Density  Neutrons                    NAME   
 *MATERIAL        13.0                 2.7      14.0                    ALUMINUM
-MATERIAL        13.0                 2.7      14.0                    MYALUMIN
+*MATERIAL        13.0                 2.7      14.0                    MYALUMIN
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 *  Be target, 1st and 2nd half
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
@@ -59,15 +59,23 @@ STOP"""
 Na = 6.02214076e23
 cm2tobarn = 1e24
 
-E_range = np.logspace(-3,6,91)
+E_range = np.logspace(-0.4,5,100)
 CrossSections = []
 for E in E_range:
+    
+    E_kin = E        # Take energy to make kinetic energy, as this is what Geant does
+    # But Fluka wants the momentum, so need to do a little conversion
+    m = 4.002603*0.931494102 # Mass in Dalton times GeV/Dalton
+    E_total = E_kin + m
+    Momentum = np.sqrt(E_total**2 - m**2)
+    
     CrossSection = None
     Found_pos = False
-    txt = setup_txt.format(E,Primary,Material)
+    txt = setup_txt.format(Momentum,Primary,Material)
     with open("setup.inp", "w") as f:
         f.write(txt)
-    os.system("rfluka -N0 -M1 -d setup.inp")
+    os.system("rfluka -N0 -M1 -d setup.inp") # need -d option to activate DPMjetIII
+    #os.system("rfluka -N0 -M1 setup.inp")
     Fluka_out = "setup001.out"
     with open(Fluka_out, 'r') as f:
         for line in f:
