@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 Primary = ["PROTON", "4-HELIUM"][1]
-Material = ["ALUMINUM","CARBON"][1]
+Material = ["ALUMINUM","CARBON","MYCARBON","GRAPHITE"][1]
 
 setup_txt = """*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 TITLE
@@ -41,6 +41,8 @@ GEOEND
 *MATERIAL     protons             Density  Neutrons                    NAME   
 *MATERIAL        13.0                 2.7      14.0                    ALUMINUM
 *MATERIAL        13.0                 2.7      14.0                    MYALUMIN
+*MATERIAL         6.0                 2.0       6.0                    MYCARBON
+*MATERIAL         6.0                 2.0       6.0                    CARBON
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 *  Be target, 1st and 2nd half
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
@@ -56,10 +58,14 @@ RANDOMIZE        1.0
 START       1.0
 STOP"""
 
+# MATERIAl         6.0                 2.0       6.0                    MYCARBON
+
 Na = 6.02214076e23
 cm2tobarn = 1e24
 
-E_range = np.logspace(-0.4,5,100)
+E_range = np.logspace(-0.4,5,10)
+E_range = np.logspace(-0.4,-0.3,2)
+E_range = [0.4]
 CrossSections = []
 for E in E_range:
     
@@ -74,8 +80,17 @@ for E in E_range:
     txt = setup_txt.format(Momentum,Primary,Material)
     with open("setup.inp", "w") as f:
         f.write(txt)
-    os.system("rfluka -N0 -M1 -d setup.inp") # need -d option to activate DPMjetIII
-    #os.system("rfluka -N0 -M1 setup.inp")
+    
+    ### Run CERN FLUKA, need -d option to activate DPMjetIII
+    os.system("/dpnc/beegfs/users/coppinp/FLUKA/fluka4-2.2/bin/rfluka -N0 -M1 -d setup.inp") 
+    
+    ### Run non-CERN FLUKA
+    #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -N0 -M1 setup.inp")
+    ### Run non-CERN FLUKA with DPMjet
+    #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/flukadpm3 -N0 -M1 setup.inp")
+    
+    # run 'make' in install_glibc or '$FLUPRO/flutil/ldpmqmd' in flutil if it complains about libflukahp.a is newer than ...
+    
     Fluka_out = "setup001.out"
     with open(Fluka_out, 'r') as f:
         for line in f:
@@ -89,6 +104,7 @@ for E in E_range:
                 AtomicNumber,AtomicWeight,Density,InelasticScatteringLength = [float(x) for x in values[2:6]]
                 NumberDensity = Na*Density/AtomicWeight
                 CrossSection = cm2tobarn / (NumberDensity*InelasticScatteringLength)
+                print(CrossSection)
                 break
     
     if( CrossSection is not None ):
@@ -97,7 +113,7 @@ for E in E_range:
         raise Exception( "No cross section found in output file!" )
 
 
-with open("CrossSections/Fluka_{}_on_{}.txt".format(Primary,Material), "w") as f:
+with open("CrossSections/Fluka_NONCERN2_{}_on_{}.txt".format(Primary,Material), "w") as f:
     f.write("# Energy (GeV)      Cross section (barn)\n")
     for E, s in zip(E_range,CrossSections):
         f.write("  {:<17.3e} {:.3e}\n".format(E,s))
