@@ -63,9 +63,9 @@ STOP"""
 Na = 6.02214076e23
 cm2tobarn = 1e24
 
-E_range = np.logspace(-0.4,5,10)
-E_range = np.logspace(-0.4,-0.3,2)
-E_range = [0.4]
+#E_range = np.logspace(-0.4,5,100)
+E_range = np.logspace(-0.4,1,20)
+E_range = [1]
 CrossSections = []
 for E in E_range:
     
@@ -74,6 +74,7 @@ for E in E_range:
     m = 4.002603*0.931494102 # Mass in Dalton times GeV/Dalton
     E_total = E_kin + m
     Momentum = np.sqrt(E_total**2 - m**2)
+    # Manually varied that the E_kin output files again matches the value we started from
     
     CrossSection = None
     Found_pos = False
@@ -82,12 +83,16 @@ for E in E_range:
         f.write(txt)
     
     ### Run CERN FLUKA, need -d option to activate DPMjetIII
-    os.system("/dpnc/beegfs/users/coppinp/FLUKA/fluka4-2.2/bin/rfluka -N0 -M1 -d setup.inp") 
+    #os.system("/dpnc/beegfs/users/coppinp/FLUKA/fluka4-2.2/bin/rfluka -N0 -M1 -d setup.inp") 
     
     ### Run non-CERN FLUKA
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -N0 -M1 setup.inp")
+    
     ### Run non-CERN FLUKA with DPMjet
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/flukadpm3 -N0 -M1 setup.inp")
+    
+    ### Run non-CERN FLUKA with DAMPE executable, requires loading Dampe_init_vary_XS
+    os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp")
     
     # run 'make' in install_glibc or '$FLUPRO/flutil/ldpmqmd' in flutil if it complains about libflukahp.a is newer than ...
     
@@ -104,7 +109,7 @@ for E in E_range:
                 AtomicNumber,AtomicWeight,Density,InelasticScatteringLength = [float(x) for x in values[2:6]]
                 NumberDensity = Na*Density/AtomicWeight
                 CrossSection = cm2tobarn / (NumberDensity*InelasticScatteringLength)
-                print(CrossSection)
+                print(E_kin, CrossSection)
                 break
     
     if( CrossSection is not None ):
@@ -113,7 +118,7 @@ for E in E_range:
         raise Exception( "No cross section found in output file!" )
 
 
-with open("CrossSections/Fluka_NONCERN2_{}_on_{}.txt".format(Primary,Material), "w") as f:
-    f.write("# Energy (GeV)      Cross section (barn)\n")
-    for E, s in zip(E_range,CrossSections):
-        f.write("  {:<17.3e} {:.3e}\n".format(E,s))
+# with open("CrossSections/Fluka_NONCERN3_{}_on_{}.txt".format(Primary,Material), "w") as f:
+#     f.write("# Energy (GeV)      Cross section (barn)\n")
+#     for E, s in zip(E_range,CrossSections):
+#         f.write("  {:<17.3e} {:.3e}\n".format(E,s))
