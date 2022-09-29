@@ -63,7 +63,7 @@ STOP"""
 Na = 6.02214076e23
 cm2tobarn = 1e24
 
-E_range = np.logspace(-0.4,5,100)
+#E_range = np.logspace(-0.4,5,100)
 E_range = np.logspace(-0.4,1,10)
 #E_range = np.logspace(-0.4,5,20)
 #E_range = [1]
@@ -109,10 +109,20 @@ for E in E_range:
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -N0 -M1 setup.inp")
     
     ### Run non-CERN FLUKA with DPMjet
-    os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/flukadpm3 -N0 -M1 setup.inp")
+    #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/flukadpm3 -N0 -M1 setup.inp")
     
     ### Run non-CERN FLUKA with DAMPE executable, requires loading Dampe_init_vary_XS
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp")
+    
+    
+    
+    
+    ### Run DAMPE FLUKA with DPMjet
+    #os.system("/dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flukadpm3 -N0 -M1 setup.inp")  
+    ### Run DAMPE FLUKA with DAMPE custom executable thingy
+    os.system("/dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp")  
+    
+    
     
     # run 'make' in install_glibc or '$FLUPRO/flutil/ldpmqmd' in flutil if it complains about libflukahp.a is newer than ...
     
@@ -138,7 +148,7 @@ for E in E_range:
         raise Exception( "No cross section found in output file!" )
 
 
-with open("CrossSections/Fluka_NONCERN21_{}_on_{}.txt".format(Primary,Material), "w") as f:
+with open("CrossSections/Fluka_DAMPE_{}_on_{}.txt".format(Primary,Material), "w") as f:
     f.write("# Energy (GeV)      Cross section (barn)\n")
     for E, s in zip(E_range,CrossSections):
         f.write("  {:<17.3e} {:.3e}\n".format(E,s))
