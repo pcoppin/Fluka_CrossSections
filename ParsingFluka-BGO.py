@@ -12,7 +12,6 @@ import numpy as np
 import os
 
 Primary = ["PROTON", "4-HELIUM"][1]
-Material = ["ALUMINUM","CARBON","LEAD","HYDROGEN","TUNGSTEN","SILICON","MYCARBON","GRAPHITE"][5]
 
 setup_txt = """*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 TITLE
@@ -46,10 +45,14 @@ GEOEND
 *MATERIAL        13.0                 2.7      14.0                    MYALUMIN
 *MATERIAL         6.0                 2.0       6.0                    MYCARBON
 *MATERIAL         6.0                 2.0       6.0                    CARBON
+MATERIAL          32               5.323                              GERMANIU
+MATERIAL          83               9.747                              BISMUTH
+MATERIAL                            7.13                              BGO       
+COMPOUND   -0.154126    OXYGEN  -0.17482  GERMANIU -0.671054   BISMUTHBGO
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 *  Be target, 1st and 2nd half
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-ASSIGNMAT  {:>8}   regBE3    regBE4
+ASSIGNMAT       BGO   regBE3    regBE4
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 *  External Black Hole
 ASSIGNMAT  BLCKHOLE   regBH1
@@ -90,7 +93,7 @@ for E in E_range:
     
     E_kin = E        # Take energy to make kinetic energy, as this is what Geant does
     
-    txt = setup_txt.format(-1*E_kin,Primary,Material)
+    txt = setup_txt.format(-1*E_kin,Primary)
     
     ### But Fluka wants the momentum, so need to do a little conversion
     ###    Manually varied that the E_kin output files again matches the value we started from
@@ -137,7 +140,7 @@ for E in E_range:
                     continue
                 else:
                     Found_pos = True
-            elif( Material in line and "*" not in line ):
+            elif( "BGO" in line and "*" not in line ):
                 values = line.split()
                 AtomicNumber,AtomicWeight,Density,InelasticScatteringLength = [float(x) for x in values[2:6]]
                 NumberDensity = Na*Density/AtomicWeight
@@ -151,7 +154,7 @@ for E in E_range:
         raise Exception( "No cross section found in output file!" )
 
 
-with open("CrossSections/Fluka_{}_on_{}.txt".format(Primary,Material), "w") as f:
+with open("CrossSections/Fluka_{}_on_BGO.txt".format(Primary), "w") as f:
     f.write("# Energy (GeV)      Cross section (barn)\n")
     for E, s in zip(E_range,CrossSections):
         f.write("  {:<17.3e} {:.3e}\n".format(E,s))
