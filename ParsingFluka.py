@@ -68,13 +68,13 @@ RANDOMIZE        1.0
 START       1.0
 STOP"""
 
-Primary = "C12"
+Primary = "Li6"
 setup_txt2 = """*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 TITLE
 Charged protons on aluminium
 *...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
 BEAM      {:10.3e}       0.0       0.0       0.0       0.0       0. HEAVYION
-HI-PROPE         6.0      12.0       0.0       0.0       0.0       0.
+HI-PROPE         3.0       6.0       0.0       0.0       0.0       0.
 BEAMPOS          0.0       0.0     -50.0
 *
 GEOBEGIN                                                              COMBNAME
@@ -150,11 +150,6 @@ for E in E_range:
     
     E_kin = E        # Take energy to make kinetic energy, as this is what Geant does
     
-    
-    
-    
-    
-    
     ### For proton and alpha
     #txt = setup_txt.format(-1*E_kin,Primary,Material)
     ### For heavy ions
@@ -185,9 +180,6 @@ for E in E_range:
     
     ### Run non-CERN FLUKA with DAMPE executable, requires loading Dampe_init_vary_XS
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp")
-    
-    
-    
     
 #     ### Run DAMPE FLUKA with DPMjet
 #     os.system("/dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flukadpm3 -N0 -M1 setup.inp")  
