@@ -36,4 +36,6 @@ cd /srv/beegfs/scratch/users/c/coppinp/temp/${SLURM_JOB_ID}_$SLURM_ARRAY_TASK_ID
 # python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka-ions.py $SLURM_ARRAY_TASK_ID 6 13 C13
 
 
+python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka-ions.py $SLURM_ARRAY_TASK_ID 8 16 O16
+
 echo $(date) - All done.
