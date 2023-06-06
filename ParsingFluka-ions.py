@@ -16,60 +16,7 @@ N_protons = int(sys.argv[2])
 N_total = int(sys.argv[3])
 Name = sys.argv[4]
 
-Primary = ["PROTON", "4-HELIUM"][0]
 Material = ["ALUMINUM","CARBON","LEAD","HYDROGEN","TUNGSTEN","SILICON","OXYGEN","GERMANIU","BISMUTH","BGO"][ list_idx ]
-# "MYCARBON","GRAPHITE"
-
-setup_txt = """*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-TITLE
-Charged protons on aluminium
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-BEAM      {:10.3e}                                                  {}
-BEAMPOS          0.0       0.0     -50.0
-*
-GEOBEGIN                                                              COMBNAME
-  0 0                       A simple Be target inside vacuum
-RPP body1 -5000000.0 +5000000.0 -5000000.0 +5000000.0 -5000000.0 +5000000.0
-RPP body2 -1000000.0 +1000000.0 -1000000.0 +1000000.0    -100.0  +1000000.0
-RPP body3     -20.0      +20.0      -20.0      +20.0        0.0       +5.0
-* plane to separate the upstream and downstream part of the target
-XYP body4       2.5
-END
-* black hole
-regBH1    5     +body1 -body2
-* vacuum around
-regVA2    5     +body2 -body3
-* Be target 1st half
-regBE3    5     +body3 +body4  
-* Be target 2nd half
-regBE4    5     +body3 -body4  
-END
-GEOEND
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-*MATERIAL         4.0               1.848       5.0                    TEST
-*MATERIAL     protons             Density  Neutrons                    NAME   
-*MATERIAL        13.0                 2.7      14.0                    ALUMINUM
-*MATERIAL        13.0                 2.7      14.0                    MYALUMIN
-*MATERIAL         6.0                 2.0       6.0                    MYCARBON
-*MATERIAL         6.0                 2.0       6.0                    CARBON
-MATERIAL          32               5.323                              GERMANIU
-MATERIAL          83               9.747                              BISMUTH
-MATERIAL                            7.13                              BGO       
-COMPOUND   -0.154126    OXYGEN  -0.17482  GERMANIU -0.671054   BISMUTHBGO
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-*  Be target, 1st and 2nd half
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-ASSIGNMAT  {:>8}   regBE3    regBE4
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-*  External Black Hole
-ASSIGNMAT  BLCKHOLE   regBH1
-*  Vacuum
-ASSIGNMAT   VACUUM    regVA2
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-RANDOMIZE        1.0
-*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
-START       1.0
-STOP"""
 
 Primary = Name
 setup_txt2 = """*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
@@ -153,8 +100,6 @@ for E in E_range:
     
     E_kin = E        # Take energy to make kinetic energy, as this is what Geant does
     
-    ### For proton and alpha
-    #txt = setup_txt.format(-1*E_kin,Primary,Material)
     ### For heavy ions
     txt = setup_txt2.format(-1*E_kin, N_protons, N_total, Material)  
     
