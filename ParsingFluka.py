@@ -2,11 +2,6 @@
 #    then /cvmfs/sft.cern.ch/lcg/contrib/gcc/9.2.0/x86_64-centos7/setup.sh
 #    to get both correct version of python and gfortran
 
-# Probably, this is far for the ideal way to do this, but is works \_()_/
-
-# Non-CERN FLUKA stopped working (I think because they released a new version?)
-#    --> Well, that's it... This shit is just too much
-
 from __future__ import print_function, division, absolute_import
 import numpy as np
 import os, sys
