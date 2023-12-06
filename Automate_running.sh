@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --partition=debug-cpu
+#SBATCH --partition=shared-bigmem
 #SBATCH --ntasks=1
-#SBATCH --job-name=SelectMC
+#SBATCH --job-name=FlukaCrossSection
 #SBATCH --mem=2G
-#SBATCH --time=00:15:00
-#SBATCH --array=0-0
+#SBATCH --time=12:00:00
+#SBATCH --array=0-9
 #SBATCH --output=/srv/beegfs/scratch/users/c/coppinp/Simu_vary_cross_section/OUT/log-%A_%a.out
 
 echo $(date) - This is $(hostname), executing task
@@ -16,9 +16,10 @@ source /cvmfs/sft.cern.ch/lcg/contrib/gcc/9.2.0/x86_64-centos7/setup.sh
 mkdir /srv/beegfs/scratch/users/c/coppinp/temp/${SLURM_JOB_ID}_$SLURM_ARRAY_TASK_ID
 cd /srv/beegfs/scratch/users/c/coppinp/temp/${SLURM_JOB_ID}_$SLURM_ARRAY_TASK_ID
 
-python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka.py $SLURM_ARRAY_TASK_ID
-
-# supposed to do #SBATCH --array=0-9
+### For proton and helium
+# python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka.py $SLURM_ARRAY_TASK_ID 0
+# python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka.py $SLURM_ARRAY_TASK_ID 1
+# python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka.py $SLURM_ARRAY_TASK_ID 2
 
 # python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka-ions.py $SLURM_ARRAY_TASK_ID 3 6 Li6
 # python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka-ions.py $SLURM_ARRAY_TASK_ID 3 7 Li7
@@ -35,5 +36,7 @@ python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/Parsi
 # python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka-ions.py $SLURM_ARRAY_TASK_ID 6 13 C13
 
 # python /dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/ParsingFluka-ions.py $SLURM_ARRAY_TASK_ID 8 16 O16
+
+
 
 echo $(date) - All done.

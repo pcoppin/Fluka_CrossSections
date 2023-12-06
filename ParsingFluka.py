@@ -12,9 +12,10 @@ import numpy as np
 import os, sys
 
 list_idx = int(sys.argv[1])
+primary_idx = int(sys.argv[2])
 
-Primary = ["PROTON", "4-HELIUM"][1]
-Material = ["ALUMINUM","CARBON","LEAD","HYDROGEN","TUNGSTEN","SILICON","OXYGEN","GERMANIU","BISMUTH","BGO"][ list_idx ]
+Primary = ["PROTON", "4-HELIUM", "3-HELIUM"][primary_idx]
+Material = ["ALUMINUM","CARBON","LEAD","HYDROGEN","TUNGSTEN","SILICON","OXYGEN","GERMANIU","BISMUTH","BGO"][list_idx]
 # "MYCARBON","GRAPHITE"
 
 setup_txt = """*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
@@ -75,7 +76,7 @@ Na = 6.02214076e23
 cm2tobarn = 1e24
 
 E_range = np.logspace(-0.4,6,100)
-#E_range = np.logspace(-0.4,6,2)
+# E_range = np.logspace(-0.4,6,2)
 #E_range = np.logspace(-0.4,1,10)
 #E_range = np.logspace(-0.4,5,20)
 #E_range = [1]
@@ -116,7 +117,7 @@ for E in E_range:
 #     ### Run DAMPE FLUKA with DPMjet
 #     os.system("/dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flukadpm3 -N0 -M1 setup.inp")  
     ### Run DAMPE FLUKA with DAMPE custom executable thingy
-    os.system("""LD_PRELOAD=~/libfaketime/src/libfaketime.so.1 FAKETIME="-200d" /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp""")  
+    os.system("""LD_PRELOAD=~/libfaketime/src/libfaketime.so.1 FAKETIME="-400d" /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp""")  
     
     
     
@@ -144,9 +145,8 @@ for E in E_range:
         raise Exception( "No cross section found in output file!" )
 
 
-outdir = "/dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/CrossSections/"
-#with open(outdir+"Fluka_{}_on_{}.txt".format(Primary,Material), "w") as f:
-with open(outdir+"Fluka_NONCERN_{}_on_{}.txt".format(Primary,Material), "w") as f:
+outdir = "/dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/CrossSections_DAMPE/"
+with open(outdir+"Fluka_{}_on_{}.txt".format(Primary,Material), "w") as f:
     f.write("# Energy (GeV)      Cross section (barn)\n")
     for E, s in zip(E_range,CrossSections):
         f.write("  {:<17.3e} {:.3e}\n".format(E,s))

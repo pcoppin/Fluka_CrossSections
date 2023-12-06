@@ -118,7 +118,7 @@ for E in E_range:
         f.write(txt)
     
     ## Run CERN FLUKA, need -d option to activate DPMjetIII
-    os.system("/dpnc/beegfs/users/coppinp/FLUKA/fluka4-2.2/bin/rfluka -N0 -M1 -d setup.inp") 
+#     os.system("/dpnc/beegfs/users/coppinp/FLUKA/fluka4-2.2/bin/rfluka -N0 -M1 -d setup.inp") 
     
     ### Run non-CERN FLUKA
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -N0 -M1 setup.inp")
@@ -129,13 +129,10 @@ for E in E_range:
     ### Run non-CERN FLUKA with DAMPE executable, requires loading Dampe_init_vary_XS
     #os.system("/dpnc/beegfs/users/coppinp/FLUKA_INFN/install_glibc/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp")
     
-    
-    
-    
 #     ### Run DAMPE FLUKA with DPMjet
 #     os.system("/dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flukadpm3 -N0 -M1 setup.inp")  
     ### Run DAMPE FLUKA with DAMPE custom executable thingy
-#     os.system("/dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp")  
+    os.system("""LD_PRELOAD=~/libfaketime/src/libfaketime.so.1 FAKETIME="-400d" /dpnc/beegfs/users/coppinp/FLUKA_DAMPE/FLUKA_2011.2x7/flutil/rfluka -e /home/users/c/coppinp/DmpSoftware/Trunk-with-vary-XS/Install/share/FlukaSimulation/bin/flukaDAMPE_iso -N0 -M1 setup.inp""") 
     
     
     
@@ -163,7 +160,7 @@ for E in E_range:
         raise Exception( "No cross section found in output file!" )
 
 
-outdir = "/dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/CrossSections/"
+outdir = "/dpnc/beegfs/users/coppinp/FLUKA/Development/ExtractOverEnergyRange/CrossSections_DAMPE/"
 with open(outdir+"Fluka_{}_on_{}.txt".format(Primary,Material), "w") as f:
     f.write("# Energy (GeV)      Cross section (barn)\n")
     for E, s in zip(E_range,CrossSections):
